@@ -92,10 +92,41 @@ data/
 
 ## 🚀 Usage
 
-### 1. Train ResNet-50
+### 🎯 Run Everything in Sequence (Recommended)
+
+To run the complete pipeline automatically (train both models, compare, and generate report):
 
 ```bash
-python experiments/train.py --config config/resnet50_config.yaml
+python experiments/main.py
+```
+
+**What happens:**
+1. Trains ResNet-50
+2. Trains EfficientNet-B0
+3. Compares both models
+4. Saves results in `./results/results.json`
+
+Then, generate the complete report:
+
+```bash
+python experiments/generate_report.py
+```
+
+**Results:**
+- Markdown report: `./results/relatorio_completo.md`
+- HTML report: `./results/relatorio_completo.html` (if markdown installed)
+- All checkpoints, logs, and visualizations
+
+---
+
+### Run Step by Step (Manual)
+
+If you prefer to run each step separately:
+
+#### 1. Train ResNet-50
+
+```bash
+python experiments/train_resnet.py
 ```
 
 **What happens:**
@@ -104,27 +135,19 @@ python experiments/train.py --config config/resnet50_config.yaml
 - Saves checkpoints in `./checkpoints/resnet50/`
 - Generates TensorBoard logs in `./runs/resnet50/`
 
-### 2. Train EfficientNet-B0
-
-First, create a configuration file for EfficientNet:
+#### 2. Train EfficientNet-B0
 
 ```bash
-cp config/resnet50_config.yaml config/efficientnet_config.yaml
+python experiments/train_efficientnet.py
 ```
 
-Edit `config/efficientnet_config.yaml` and change:
-```yaml
-model:
-  name: efficientnet_b0
-```
+**What happens:**
+- Loads and splits the dataset (70% train, 15% validation, 15% test)
+- Trains EfficientNet-B0 model with early stopping
+- Saves checkpoints in `./checkpoints/efficientnet_b0/`
+- Generates TensorBoard logs in `./runs/efficientnet_b0/`
 
-Then, train:
-
-```bash
-python experiments/train.py --config config/efficientnet_config.yaml
-```
-
-### 3. Compare Models
+#### 3. Compare Models
 
 After training both models, run the complete comparison:
 
@@ -140,7 +163,7 @@ python experiments/compare.py
 - Error analysis (false positives/negatives)
 - Computational efficiency benchmark
 
-### 4. Explainability Analysis (Grad-CAM)
+#### 4. Explainability Analysis (Grad-CAM)
 
 Generates visual attention maps to compare how models "see" images:
 
@@ -185,16 +208,13 @@ Open in browser:
 
 ```
 melanoma-detection/
-├── config/                 # YAML configuration files
-│   └── resnet50_config.yaml
 ├── data/                   # Dataset and processing
 │   ├── dataset.py          # Dataset loading
 │   ├── preprocessing.py    # Transformations and augmentations
 │   └── isic2020/          # Data (benign/, malignant/)
 ├── models/                 # Model architectures
 │   ├── resnet.py
-│   ├── efficientnet.py
-│   └── model_factory.py
+│   └── efficientnet.py
 ├── training/               # Training system
 │   └── trainer.py
 ├── evaluation/             # Metrics and benchmarks
@@ -203,11 +223,13 @@ melanoma-detection/
 ├── explainability/         # Grad-CAM
 │   └── gradcam.py
 ├── experiments/            # Main scripts
-│   ├── train.py            # Training
+│   ├── main.py             # Main script (runs everything)
+│   ├── generate_report.py  # Generates complete report
+│   ├── train_resnet.py     # Train ResNet-50
+│   ├── train_efficientnet.py # Train EfficientNet-B0
 │   ├── compare.py         # Complete comparison
 │   └── analyze_explainability.py
 ├── utils/                  # Utilities
-│   ├── config.py           # Configuration management
 │   └── reproducibility.py  # Seed and device
 ├── checkpoints/            # Trained models (generated)
 ├── results/                # Results and visualizations (generated)
@@ -239,9 +261,8 @@ The comparison includes:
 
 ## ⚙️ Configuration
 
-Edit `config/resnet50_config.yaml` to adjust:
+The training scripts (`train_resnet.py` and `train_efficientnet.py`) have simple and direct configurations. To adjust parameters, edit the scripts directly:
 
-- **Model**: `resnet50` or `efficientnet_b0`
 - **Batch size**: Batch size (default: 32)
 - **Learning rate**: Learning rate (default: 0.0001)
 - **Epochs**: Maximum number of epochs (default: 50)
@@ -272,28 +293,49 @@ brew install python3
 
 ### Checkpoints not found
 
-- Run training first (`experiments/train.py`)
+- Run training first (`python experiments/main.py` or individual scripts)
 - Checkpoints are automatically saved in `./checkpoints/`
 
 ## 📝 Complete Execution Example
+
+### Quick Method (Recommended)
+
+```bash
+# 1. Activate virtual environment
+source venv/bin/activate
+
+# 2. Run everything in sequence
+python experiments/main.py
+
+# 3. Generate complete report
+python experiments/generate_report.py
+
+# 4. View in TensorBoard
+tensorboard --logdir ./runs
+```
+
+### Manual Method (Step by Step)
 
 ```bash
 # 1. Activate virtual environment
 source venv/bin/activate
 
 # 2. Train ResNet-50
-python experiments/train.py --config config/resnet50_config.yaml
+python experiments/train_resnet.py
 
-# 3. Train EfficientNet-B0 (after creating config)
-python experiments/train.py --config config/efficientnet_config.yaml
+# 3. Train EfficientNet-B0
+python experiments/train_efficientnet.py
 
 # 4. Compare models
 python experiments/compare.py
 
-# 5. Explainability analysis
+# 5. Generate report
+python experiments/generate_report.py
+
+# 6. (Optional) Explainability analysis
 python experiments/analyze_explainability.py --num_samples 50
 
-# 6. View in TensorBoard
+# 7. View in TensorBoard
 tensorboard --logdir ./runs
 ```
 

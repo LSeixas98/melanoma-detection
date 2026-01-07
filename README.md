@@ -92,10 +92,41 @@ data/
 
 ## 🚀 Uso
 
-### 1. Treinar ResNet-50
+### 🎯 Executar Tudo em Sequência (Recomendado)
+
+Para executar todo o pipeline automaticamente (treinar ambos os modelos, comparar e gerar relatório):
 
 ```bash
-python experiments/train.py --config config/resnet50_config.yaml
+python experiments/main.py
+```
+
+**O que acontece:**
+1. Treina ResNet-50
+2. Treina EfficientNet-B0
+3. Compara ambos os modelos
+4. Salva resultados em `./results/results.json`
+
+Depois, gere o relatório completo:
+
+```bash
+python experiments/generate_report.py
+```
+
+**Resultados:**
+- Relatório Markdown: `./results/relatorio_completo.md`
+- Relatório HTML: `./results/relatorio_completo.html` (se markdown instalado)
+- Todos os checkpoints, logs e visualizações
+
+---
+
+### Executar Passo a Passo (Manual)
+
+Se preferir executar cada etapa separadamente:
+
+#### 1. Treinar ResNet-50
+
+```bash
+python experiments/train_resnet.py
 ```
 
 **O que acontece:**
@@ -104,27 +135,19 @@ python experiments/train.py --config config/resnet50_config.yaml
 - Salva checkpoints em `./checkpoints/resnet50/`
 - Gera logs no TensorBoard em `./runs/resnet50/`
 
-### 2. Treinar EfficientNet-B0
-
-Primeiro, crie um arquivo de configuração para EfficientNet:
+#### 2. Treinar EfficientNet-B0
 
 ```bash
-cp config/resnet50_config.yaml config/efficientnet_config.yaml
+python experiments/train_efficientnet.py
 ```
 
-Edite `config/efficientnet_config.yaml` e altere:
-```yaml
-model:
-  name: efficientnet_b0
-```
+**O que acontece:**
+- Carrega e divide o dataset (70% treino, 15% validação, 15% teste)
+- Treina o modelo EfficientNet-B0 com early stopping
+- Salva checkpoints em `./checkpoints/efficientnet_b0/`
+- Gera logs no TensorBoard em `./runs/efficientnet_b0/`
 
-Depois, treine:
-
-```bash
-python experiments/train.py --config config/efficientnet_config.yaml
-```
-
-### 3. Comparar Modelos
+#### 3. Comparar Modelos
 
 Após treinar ambos os modelos, execute a comparação completa:
 
@@ -140,7 +163,7 @@ python experiments/compare.py
 - Análise de erros (falsos positivos/negativos)
 - Benchmark de eficiência computacional
 
-### 4. Análise de Explicabilidade (Grad-CAM)
+#### 4. Análise de Explicabilidade (Grad-CAM)
 
 Gera mapas de atenção visual para comparar como os modelos "veem" as imagens:
 
@@ -185,16 +208,13 @@ Abra no navegador:
 
 ```
 melanoma-detection/
-├── config/                  # Arquivos de configuração YAML
-│   └── resnet50_config.yaml
 ├── data/                   # Dataset e processamento
 │   ├── dataset.py          # Carregamento do dataset
 │   ├── preprocessing.py    # Transformações e augmentações
 │   └── isic2020/           # Dados (benign/, malignant/)
 ├── models/                 # Arquiteturas de modelos
 │   ├── resnet.py
-│   ├── efficientnet.py
-│   └── model_factory.py
+│   └── efficientnet.py
 ├── training/               # Sistema de treinamento
 │   └── trainer.py
 ├── evaluation/             # Métricas e benchmarks
@@ -203,11 +223,13 @@ melanoma-detection/
 ├── explainability/         # Grad-CAM
 │   └── gradcam.py
 ├── experiments/            # Scripts principais
-│   ├── train.py            # Treinamento
+│   ├── main.py             # Script principal (executa tudo)
+│   ├── generate_report.py  # Gera relatório completo
+│   ├── train_resnet.py     # Treinar ResNet-50
+│   ├── train_efficientnet.py # Treinar EfficientNet-B0
 │   ├── compare.py          # Comparação completa
 │   └── analyze_explainability.py
 ├── utils/                  # Utilitários
-│   ├── config.py            # Gerenciamento de configurações
 │   └── reproducibility.py  # Seed e device
 ├── checkpoints/            # Modelos treinados (gerado)
 ├── results/                # Resultados e visualizações (gerado)
@@ -239,9 +261,8 @@ A comparação inclui:
 
 ## ⚙️ Configuração
 
-Edite `config/resnet50_config.yaml` para ajustar:
+Os scripts de treinamento (`train_resnet.py` e `train_efficientnet.py`) têm configurações simples e diretas. Para ajustar parâmetros, edite diretamente os scripts:
 
-- **Modelo**: `resnet50` ou `efficientnet_b0`
 - **Batch size**: Tamanho do lote (padrão: 32)
 - **Learning rate**: Taxa de aprendizado (padrão: 0.0001)
 - **Épocas**: Número máximo de épocas (padrão: 50)
@@ -272,28 +293,49 @@ brew install python3
 
 ### Checkpoints não encontrados
 
-- Execute primeiro o treinamento (`experiments/train.py`)
+- Execute primeiro o treinamento (`python experiments/main.py` ou scripts individuais)
 - Os checkpoints são salvos automaticamente em `./checkpoints/`
 
 ## 📝 Exemplo Completo de Execução
+
+### Método Rápido (Recomendado)
+
+```bash
+# 1. Ativar ambiente virtual
+source venv/bin/activate
+
+# 2. Executar tudo em sequência
+python experiments/main.py
+
+# 3. Gerar relatório completo
+python experiments/generate_report.py
+
+# 4. Visualizar no TensorBoard
+tensorboard --logdir ./runs
+```
+
+### Método Manual (Passo a Passo)
 
 ```bash
 # 1. Ativar ambiente virtual
 source venv/bin/activate
 
 # 2. Treinar ResNet-50
-python experiments/train.py --config config/resnet50_config.yaml
+python experiments/train_resnet.py
 
-# 3. Treinar EfficientNet-B0 (após criar config)
-python experiments/train.py --config config/efficientnet_config.yaml
+# 3. Treinar EfficientNet-B0
+python experiments/train_efficientnet.py
 
 # 4. Comparar modelos
 python experiments/compare.py
 
-# 5. Análise de explicabilidade
+# 5. Gerar relatório
+python experiments/generate_report.py
+
+# 6. (Opcional) Análise de explicabilidade
 python experiments/analyze_explainability.py --num_samples 50
 
-# 6. Visualizar no TensorBoard
+# 7. Visualizar no TensorBoard
 tensorboard --logdir ./runs
 ```
 
