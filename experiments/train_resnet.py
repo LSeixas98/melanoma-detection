@@ -19,6 +19,7 @@ from data.dataset import get_dataloaders
 from models.resnet import get_resnet50
 from training.trainer import Trainer
 from evaluation.metrics import evaluate_model, print_metrics
+from config.default_config import get_config
 
 
 def main():
@@ -42,32 +43,8 @@ def main():
         print("   Execute: python data/organize_isic.py --help")
         sys.exit(1)
     
-    # Configuração simples
-    config = {
-        'data': {
-            'data_dir': './data/isic2020',
-            'batch_size': 32,
-            'num_workers': 4,
-            'train_split': 0.7,
-            'val_split': 0.15,
-            'test_split': 0.15,
-            'image_size': 224
-        },
-        'augmentation': {
-            'rotation': 30,
-            'horizontal_flip': 0.5,
-            'vertical_flip': 0.5,
-            'brightness': 0.2,
-            'contrast': 0.2,
-            'zoom_range': [0.8, 1.2]
-        },
-        'training': {
-            'early_stopping_patience': 10
-        },
-        'random_seed': 42,
-        'checkpoint_dir': './checkpoints/resnet50',
-        'log_dir': './runs'
-    }
+    # Configuração usando config centralizada
+    config = get_config('resnet50')
     
     set_seed(config['random_seed'])
     device = get_device()
@@ -87,9 +64,19 @@ def main():
     
     # Otimizador e Loss
     print("\n[3/5] Configurando treinamento...")
-    optimizer = optim.Adam(model.parameters(), lr=0.0001, weight_decay=0.00001)
+    train_cfg = config['training']
+    optimizer = optim.Adam(
+        model.parameters(), 
+        lr=train_cfg['learning_rate'], 
+        weight_decay=train_cfg['weight_decay']
+    )
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode='max', factor=0.5, patience=5, verbose=True
+        optimizer, 
+        mode='max', 
+        factor=train_cfg['scheduler_factor'], 
+        patience=train_cfg['scheduler_patience'], 
+        min_lr=train_cfg['scheduler_min_lr'],
+        verbose=True
     )
     weights = class_weights.to(device)
     criterion = nn.CrossEntropyLoss(weight=weights)
@@ -109,7 +96,7 @@ def main():
     
     # Treinar
     print("\n[5/5] Treinando...")
-    trainer.fit(train_loader, val_loader, epochs=50)
+    trainer.fit(train_loader, val_loader, epochs=config['training']['epochs'])
     
     # Avaliar
     print("\n" + "="*60)

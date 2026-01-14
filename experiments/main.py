@@ -6,7 +6,7 @@ Script principal para executar todo o pipeline em sequência:
 4. Coletar resultados para relatório
 
 Uso:
-    python experiments/run_all.py
+    python experiments/main.py
 """
 
 import sys
@@ -26,6 +26,7 @@ from models.efficientnet import get_efficientnet_b0
 from evaluation.metrics import evaluate_model, get_predictions
 from evaluation.efficiency import benchmark_model
 from training.trainer import Trainer
+from config.default_config import get_config
 import torch.nn as nn
 import torch.optim as optim
 
@@ -55,32 +56,7 @@ def train_resnet(collector):
     print("ETAPA 1/3: TREINAMENTO ResNet-50")
     print("="*80 + "\n")
     
-    config = {
-        'data': {
-            'data_dir': './data/isic2020',
-            'batch_size': 32,
-            'num_workers': 4,
-            'train_split': 0.7,
-            'val_split': 0.15,
-            'test_split': 0.15,
-            'image_size': 224
-        },
-        'augmentation': {
-            'rotation': 30,
-            'horizontal_flip': 0.5,
-            'vertical_flip': 0.5,
-            'brightness': 0.2,
-            'contrast': 0.2,
-            'zoom_range': [0.8, 1.2]
-        },
-        'random_seed': 42,
-        'checkpoint_dir': './checkpoints/resnet50',
-        'log_dir': './runs',
-        'training': {
-            'epochs': 50,
-            'early_stopping_patience': 10
-        }
-    }
+    config = get_config('resnet50')
     
     set_seed(config['random_seed'])
     device = get_device()
@@ -101,9 +77,19 @@ def train_resnet(collector):
     
     # Treinamento
     print("\n[3/5] Configurando treinamento...")
-    optimizer = optim.Adam(model.parameters(), lr=0.0001, weight_decay=0.00001)
+    train_cfg = config['training']
+    optimizer = optim.Adam(
+        model.parameters(), 
+        lr=train_cfg['learning_rate'], 
+        weight_decay=train_cfg['weight_decay']
+    )
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode='max', factor=0.5, patience=5, verbose=True
+        optimizer, 
+        mode='max', 
+        factor=train_cfg['scheduler_factor'], 
+        patience=train_cfg['scheduler_patience'], 
+        min_lr=train_cfg['scheduler_min_lr'],
+        verbose=True
     )
     weights = class_weights.to(device)
     criterion = nn.CrossEntropyLoss(weight=weights)
@@ -163,32 +149,7 @@ def train_efficientnet(collector):
     print("ETAPA 2/3: TREINAMENTO EfficientNet-B0")
     print("="*80 + "\n")
     
-    config = {
-        'data': {
-            'data_dir': './data/isic2020',
-            'batch_size': 32,
-            'num_workers': 4,
-            'train_split': 0.7,
-            'val_split': 0.15,
-            'test_split': 0.15,
-            'image_size': 224
-        },
-        'augmentation': {
-            'rotation': 30,
-            'horizontal_flip': 0.5,
-            'vertical_flip': 0.5,
-            'brightness': 0.2,
-            'contrast': 0.2,
-            'zoom_range': [0.8, 1.2]
-        },
-        'random_seed': 42,
-        'checkpoint_dir': './checkpoints/efficientnet_b0',
-        'log_dir': './runs',
-        'training': {
-            'epochs': 50,
-            'early_stopping_patience': 10
-        }
-    }
+    config = get_config('efficientnet_b0')
     
     set_seed(config['random_seed'])
     device = get_device()
@@ -209,9 +170,19 @@ def train_efficientnet(collector):
     
     # Treinamento
     print("\n[3/5] Configurando treinamento...")
-    optimizer = optim.Adam(model.parameters(), lr=0.0001, weight_decay=0.00001)
+    train_cfg = config['training']
+    optimizer = optim.Adam(
+        model.parameters(), 
+        lr=train_cfg['learning_rate'], 
+        weight_decay=train_cfg['weight_decay']
+    )
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode='max', factor=0.5, patience=5, verbose=True
+        optimizer, 
+        mode='max', 
+        factor=train_cfg['scheduler_factor'], 
+        patience=train_cfg['scheduler_patience'], 
+        min_lr=train_cfg['scheduler_min_lr'],
+        verbose=True
     )
     weights = class_weights.to(device)
     criterion = nn.CrossEntropyLoss(weight=weights)

@@ -17,7 +17,7 @@ def load_results(results_path='./results/results.json'):
     """Carrega resultados do JSON."""
     if not Path(results_path).exists():
         print(f"❌ Arquivo de resultados não encontrado: {results_path}")
-        print("   Execute primeiro: python experiments/run_all.py")
+        print("   Execute primeiro: python experiments/main.py")
         sys.exit(1)
     
     with open(results_path, 'r') as f:
