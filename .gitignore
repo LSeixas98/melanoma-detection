@@ -206,3 +206,16 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 .DS_Store
+
+
+# Melanoma Detection Project - Generated files
+checkpoints/
+runs/
+results/
+*.pth
+*.pt
+*.onnx
+data/isic2020/benign/
+data/isic2020/malignant/
+data/isic2020_test/benign/
+data/isic2020_test/malignant/
