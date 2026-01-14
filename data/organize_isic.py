@@ -289,8 +289,8 @@ if __name__ == "__main__":
                         help='Caminho(s) para arquivo(s) CSV com metadados (ex: ISIC_2020_Train_Metadata.csv ISIC_2020_Test_Metadata.csv)')
     parser.add_argument('--target', type=str, default='./data/isic2020',
                         help='Diretório onde serão organizadas as imagens (padrão: ./data/isic2020)')
-    parser.add_argument('--image-col', type=str, default='image',
-                        help='Nome da coluna no CSV com o nome da imagem (padrão: image)')
+    parser.add_argument('--image-col', type=str, default='image_name',
+                        help='Nome da coluna no CSV com o nome da imagem (padrão: image_name)')
     parser.add_argument('--label-col', type=str, default='benign_malignant',
                         help='Nome da coluna no CSV com a label (padrão: benign_malignant)')
     parser.add_argument('--ground-truth', type=str, default=None,

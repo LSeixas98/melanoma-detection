@@ -26,6 +26,22 @@ def main():
     print("TREINAMENTO ResNet-50")
     print("="*60 + "\n")
     
+    # Validar dataset
+    from pathlib import Path
+    data_dir = Path('./data/isic2020')
+    if not data_dir.exists():
+        print(f"❌ Dataset não encontrado: {data_dir}")
+        print("   Execute: python data/organize_isic.py --help")
+        sys.exit(1)
+    
+    benign_dir = data_dir / 'benign'
+    malignant_dir = data_dir / 'malignant'
+    if not benign_dir.exists() or not malignant_dir.exists():
+        print(f"❌ Estrutura de dataset inválida em: {data_dir}")
+        print("   Esperado: data_dir/benign/ e data_dir/malignant/")
+        print("   Execute: python data/organize_isic.py --help")
+        sys.exit(1)
+    
     # Configuração simples
     config = {
         'data': {
@@ -44,6 +60,9 @@ def main():
             'brightness': 0.2,
             'contrast': 0.2,
             'zoom_range': [0.8, 1.2]
+        },
+        'training': {
+            'early_stopping_patience': 10
         },
         'random_seed': 42,
         'checkpoint_dir': './checkpoints/resnet50',

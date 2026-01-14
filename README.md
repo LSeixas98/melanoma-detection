@@ -269,6 +269,20 @@ Os scripts de treinamento (`train_resnet.py` e `train_efficientnet.py`) têm con
 - **Early stopping**: Patience para parada antecipada (padrão: 10)
 - **Augmentações**: Rotação, flip, brilho, contraste, zoom
 
+## ✅ Verificação de Ambiente
+
+Antes de começar, verifique se tudo está configurado corretamente:
+
+```bash
+python utils/check_setup.py
+```
+
+Este script verifica:
+- Versão do Python (3.8+)
+- Dependências instaladas
+- Estrutura do dataset
+- Diretórios necessários
+
 ## 🐛 Solução de Problemas
 
 ### Erro: "pip: command not found"
@@ -290,6 +304,12 @@ brew install python3
 
 - Verifique se os dados estão em `./data/isic2020/`
 - Confirme a estrutura: `benign/` e `malignant/` dentro de `isic2020/`
+- Execute: `python utils/check_setup.py` para diagnóstico completo
+- Se o dataset não estiver organizado, use: `python data/organize_isic.py --help`
+
+### Erro: "KeyError: 'training'"
+
+Se você encontrar este erro ao executar `train_resnet.py` ou `train_efficientnet.py`, certifique-se de estar usando a versão mais recente dos scripts. Os scripts foram atualizados para incluir a configuração `training` necessária.
 
 ### Checkpoints não encontrados
 
