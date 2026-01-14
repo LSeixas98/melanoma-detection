@@ -16,7 +16,6 @@ from pathlib import Path
 from sklearn.metrics import roc_curve, auc
 
 from utils.reproducibility import set_seed, get_device
-from utils.config import DEFAULT_CONFIG
 from data.preprocessing import get_transforms
 from data.dataset import get_dataloaders
 from models.resnet import get_resnet50
@@ -267,14 +266,23 @@ def main():
     print("COMPARAÇÃO COMPLETA: ResNet-50 vs EfficientNet-B0")
     print("="*60 + "\n")
     
-    # Setup
     set_seed(42)
     device = get_device()
     
-    # Configuração
-    config = DEFAULT_CONFIG.copy()
+    # Configuração simples
+    config = {
+        'data': {
+            'data_dir': './data/isic2020',
+            'batch_size': 32,
+            'num_workers': 4,
+            'train_split': 0.7,
+            'val_split': 0.15,
+            'test_split': 0.15,
+            'image_size': 224
+        },
+        'augmentation': {}
+    }
     
-    # Transformações e dados
     print("[1/5] Carregando dados...")
     val_transform = get_transforms(config, train=False)
     _, _, test_loader, _ = get_dataloaders(

@@ -19,7 +19,6 @@ from PIL import Image
 from tqdm import tqdm
 
 from utils.reproducibility import set_seed, get_device
-from utils.config import DEFAULT_CONFIG
 from data.preprocessing import get_transforms
 from data.dataset import get_dataloaders
 from models.resnet import get_resnet50
@@ -149,7 +148,20 @@ def main(args):
     # Setup
     set_seed(42)
     device = get_device()
-    config = DEFAULT_CONFIG.copy()
+    
+    # Configuração simples
+    config = {
+        'data': {
+            'data_dir': './data/isic2020',
+            'batch_size': 32,
+            'num_workers': 4,
+            'train_split': 0.7,
+            'val_split': 0.15,
+            'test_split': 0.15,
+            'image_size': 224
+        },
+        'augmentation': {}
+    }
     
     # Criar diretório de saída
     save_dir = Path(args.save_dir)
