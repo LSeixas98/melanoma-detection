@@ -78,7 +78,8 @@ class GradCAM:
         
         # Combinação linear ponderada das ativações
         # Shape: (channels, H, W)
-        cam = torch.zeros(self.activations.shape[2:], dtype=torch.float32)
+        device = self.activations.device
+        cam = torch.zeros(self.activations.shape[2:], dtype=torch.float32, device=device)
         for i, w in enumerate(weights):
             cam += w * self.activations[0, i, :, :]
         
@@ -162,7 +163,8 @@ class GradCAMPlusPlus(GradCAM):
         weights = (alpha * F.relu(gradients)).sum(dim=(1, 2))
         
         # Combinação linear
-        cam = torch.zeros(activations.shape[1:], dtype=torch.float32)
+        device = activations.device
+        cam = torch.zeros(activations.shape[1:], dtype=torch.float32, device=device)
         for i, w in enumerate(weights):
             cam += w * activations[i, :, :]
         

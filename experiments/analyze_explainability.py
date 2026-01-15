@@ -24,6 +24,7 @@ from data.dataset import get_dataloaders
 from models.resnet import get_resnet50
 from models.efficientnet import get_efficientnet_b0
 from explainability.gradcam import GradCAM, GradCAMPlusPlus, compare_gradcam_methods
+from config.default_config import get_config
 
 
 def denormalize_image(tensor, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]):
@@ -149,19 +150,8 @@ def main(args):
     set_seed(42)
     device = get_device()
     
-    # Configuração simples
-    config = {
-        'data': {
-            'data_dir': './data/isic2020',
-            'batch_size': 32,
-            'num_workers': 4,
-            'train_split': 0.7,
-            'val_split': 0.15,
-            'test_split': 0.15,
-            'image_size': 224
-        },
-        'augmentation': {}
-    }
+    # Configuração usando config centralizada
+    config = get_config('resnet50')  # Usa qualquer modelo, só precisamos da estrutura
     
     # Criar diretório de saída
     save_dir = Path(args.save_dir)
@@ -365,7 +355,7 @@ def create_html_index(results, save_dir, agreement_rate, resnet_acc, effnet_acc)
     </html>
     """
     
-    with open(save_dir / 'index.html', 'w') as f:
+    with open(save_dir / 'index.html', 'w', encoding='utf-8') as f:
         f.write(html_content)
 
 

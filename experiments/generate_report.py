@@ -73,7 +73,11 @@ def format_efficiency_table(efficiency):
         rows.append(f"| **Latência Média** | {efficiency['latency']['mean_ms']:.2f} ms |")
         rows.append(f"| **Latência Std** | {efficiency['latency']['std_ms']:.2f} ms |")
     if 'memory' in efficiency:
-        rows.append(f"| **Memória GPU** | {efficiency['memory']['peak_mb']:.2f} MB |")
+        mem = efficiency['memory']
+        if 'memory_allocated_mb' in mem:
+            rows.append(f"| **Memória Alocada** | {mem['memory_allocated_mb']:.2f} MB |")
+        if 'memory_reserved_mb' in mem:
+            rows.append(f"| **Memória Reservada** | {mem['memory_reserved_mb']:.2f} MB |")
     if 'size' in efficiency:
         rows.append(f"| **Tamanho do Modelo** | {efficiency['size']['size_mb']:.2f} MB |")
     
@@ -181,6 +185,22 @@ ISIC 2020 e avaliados usando métricas clínicas e de eficiência computacional.
     md += f"""
 ---
 
+## 📈 Visualizações Comparativas
+
+### Curvas ROC
+
+![Curvas ROC Comparativas](./roc_comparison.png)
+
+*Figura 1: Curvas ROC comparativas entre ResNet-50 e EfficientNet-B0. A área sob a curva (AUC) indica a capacidade discriminativa de cada modelo.*
+
+### Comparação de Métricas
+
+![Comparação de Métricas](./metrics_comparison.png)
+
+*Figura 2: Comparação visual das métricas clínicas entre os dois modelos.*
+
+---
+
 ## 📈 Análise de Curvas de Treinamento
 
 Os gráficos de treinamento estão disponíveis no TensorBoard:
@@ -258,15 +278,22 @@ def save_report(markdown_content, output_dir='./results'):
     <meta charset="UTF-8">
     <title>Relatório - Detecção de Melanoma</title>
     <style>
-        body {{ font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }}
+        body {{ font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; max-width: 1200px; }}
         table {{ border-collapse: collapse; width: 100%; margin: 20px 0; }}
         th, td {{ border: 1px solid #ddd; padding: 12px; text-align: left; }}
         th {{ background-color: #4CAF50; color: white; }}
         tr:nth-child(even) {{ background-color: #f2f2f2; }}
         h1 {{ color: #333; }}
         h2 {{ color: #555; margin-top: 30px; }}
+        h3 {{ color: #666; margin-top: 25px; }}
+        h4 {{ color: #777; margin-top: 20px; }}
         code {{ background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; }}
         pre {{ background-color: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }}
+        img {{ max-width: 100%; height: auto; margin: 20px auto; display: block; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }}
+        .figure-caption {{ font-style: italic; color: #666; margin-top: 10px; margin-bottom: 30px; text-align: center; }}
+        .figure-container {{ text-align: center; margin: 30px 0; padding: 20px; background-color: #fafafa; border-radius: 8px; }}
+        hr {{ border: none; border-top: 2px solid #eee; margin: 30px 0; }}
+        p {{ margin: 15px 0; }}
     </style>
 </head>
 <body>

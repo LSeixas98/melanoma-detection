@@ -22,6 +22,7 @@ from models.resnet import get_resnet50
 from models.efficientnet import get_efficientnet_b0
 from evaluation.metrics import evaluate_model, print_metrics, get_predictions
 from evaluation.efficiency import benchmark_model, print_efficiency_comparison
+from config.default_config import get_config
 
 
 def load_trained_model(model, checkpoint_path, device):
@@ -269,19 +270,8 @@ def main():
     set_seed(42)
     device = get_device()
     
-    # Configuração simples
-    config = {
-        'data': {
-            'data_dir': './data/isic2020',
-            'batch_size': 32,
-            'num_workers': 4,
-            'train_split': 0.7,
-            'val_split': 0.15,
-            'test_split': 0.15,
-            'image_size': 224
-        },
-        'augmentation': {}
-    }
+    # Configuração usando config centralizada
+    config = get_config('resnet50')  # Usa qualquer modelo, só precisamos da estrutura
     
     print("[1/5] Carregando dados...")
     val_transform = get_transforms(config, train=False)
