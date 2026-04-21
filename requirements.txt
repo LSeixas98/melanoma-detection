@@ -19,6 +19,9 @@ matplotlib>=3.7.0
 seaborn>=0.12.0
 plotly>=5.16.0
 
+# Interface Gráfica
+gradio>=4.0.0
+
 # Experimentação e Utilitários
 tensorboard>=2.13.0
 pyyaml>=6.0.0

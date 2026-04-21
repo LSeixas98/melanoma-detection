@@ -150,3 +150,25 @@ def get_dataloaders(config: dict, train_transform, val_transform) -> Tuple:
     
     print(f"\n✓ DataLoaders criados (batch_size={batch_size})")
     return train_loader, val_loader, test_loader, class_weights
+
+
+def create_data_loaders(config: dict) -> Tuple:
+    """
+    Wrapper function para criar DataLoaders com transformações padrão.
+
+    Args:
+        config: Dicionário de configuração
+
+    Returns:
+        Tupla (train_loader, val_loader, test_loader)
+    """
+    from data.preprocessing import get_transforms
+
+    image_size = config['data']['image_size']
+    train_transform, val_transform = get_transforms(image_size)
+
+    train_loader, val_loader, test_loader, class_weights = get_dataloaders(
+        config, train_transform, val_transform
+    )
+
+    return train_loader, val_loader, test_loader

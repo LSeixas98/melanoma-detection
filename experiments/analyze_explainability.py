@@ -340,12 +340,16 @@ def create_html_index(results, save_dir, agreement_rate, resnet_acc, effnet_acc)
         filename = f"sample_{i:03d}_label{result['label']}_resnet{result['resnet_pred']}_effnet{result['effnet_pred']}.png"
         
         html_content += f"""
-            <div class="sample {css_class}">
-                <h3>Amostra {i} - {status}</h3>
-                <p><strong>Label Verdadeiro:</strong> {label_text}</p>
-                <p><strong>ResNet-50:</strong> {resnet_pred_text} ({result['resnet_conf']*100:.1f}%)</p>
-                <p><strong>EfficientNet-B0:</strong> {effnet_pred_text} ({result['effnet_conf']*100:.1f}%)</p>
-                <img src="{filename}" alt="Sample {i}">
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card sample-card {css_class}">
+                    <div class="card-body">
+                        <h5 class="card-title">Amostra {i} - {status}</h5>
+                        <p class="card-text"><strong>Label Verdadeiro:</strong> {label_text}</p>
+                        <p class="card-text"><strong>ResNet-50:</strong> {resnet_pred_text} ({result['resnet_conf']*100:.1f}%)</p>
+                        <p class="card-text"><strong>EfficientNet-B0:</strong> {effnet_pred_text} ({result['effnet_conf']*100:.1f}%)</p>
+                        <img src="{filename}" class="card-img-bottom img-fluid" alt="Sample {i}">
+                    </div>
+                </div>
             </div>
         """
     

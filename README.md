@@ -92,7 +92,112 @@ data/
 
 ## 🚀 Uso
 
-### 🎯 Executar Tudo em Sequência (Recomendado)
+### 🖥️ Interface Gráfica (Recomendado para Iniciantes)
+
+**Nova funcionalidade!** Interface web completa para treinar, fazer predições e analisar resultados de forma intuitiva.
+
+#### Iniciar a Interface
+
+**Windows:**
+```bash
+python app.py
+# ou clique duas vezes em run_gui.bat
+```
+
+**Linux/Mac:**
+```bash
+python3 app.py
+# ou execute: ./run_gui.sh
+```
+
+A interface será aberta automaticamente em: **http://localhost:7860**
+
+#### Funcionalidades Principais
+
+**🏋️ Treinamento**
+- Selecione o modelo (ResNet-50 ou EfficientNet-B0)
+- Configure hiperparâmetros (épocas, batch size, learning rate)
+- Acompanhe o progresso em tempo real com logs ao vivo
+- Checkpoints salvos automaticamente em `./checkpoints/`
+
+**🔍 Predição Individual**
+- Carregue modelos treinados com um clique
+- Faça upload de imagens de lesões cutâneas
+- Visualize probabilidades e predições
+- **Grad-CAM**: Mapas de calor mostrando regiões importantes para a decisão
+- Compare predições de ambos os modelos lado a lado
+
+**📁 Predição em Lote**
+- Processe múltiplas imagens simultaneamente
+- Exportação de resultados em CSV
+- Visualização em tabela com probabilidades
+
+**⚖️ Comparação de Modelos**
+- Compare ResNet-50 vs EfficientNet-B0
+- Métricas clínicas comparativas (Acurácia, Sensibilidade, Especificidade, AUC-ROC, F1-Score)
+- Gráficos comparativos interativos
+
+**📊 Histórico de Treinamentos**
+- Visualize todos os treinamentos realizados
+- Curvas de aprendizado (loss, AUC-ROC, learning rate)
+- Métricas de teste de cada modelo
+
+#### Como Usar - Fluxo Rápido
+
+1. **Treinar um modelo:**
+   - Aba "🏋️ Treinamento" → Selecione modelo → Configure parâmetros → "▶️ Iniciar Treinamento"
+   - Aguarde conclusão (progresso em tempo real)
+
+2. **Fazer predições:**
+   - Aba "🔍 Predição Individual" → Carregue os modelos → Upload da imagem → "🔮 Fazer Predição"
+   - Marque "Mostrar Grad-CAM" para visualização de explicabilidade
+
+3. **Comparar resultados:**
+   - Aba "⚖️ Comparação" → "🔄 Executar Comparação"
+   - Analise métricas e identifique o melhor modelo
+
+#### Dicas Importantes
+
+- **Sempre carregue os modelos** antes de fazer predições (botões "Carregar ResNet-50" e "Carregar EfficientNet-B0")
+- **Use Grad-CAM** para validar se o modelo está focando em regiões corretas da lesão
+- **Compare ambos os modelos** para maior confiança nas predições
+- **Sensibilidade é crucial** para melanoma (capacidade de detectar casos malignos)
+
+#### Compartilhar na Rede Local
+
+Para acessar de outros dispositivos na mesma rede:
+
+1. Identifique seu IP local:
+   ```bash
+   ipconfig      # Windows
+   ifconfig      # Linux/Mac
+   ```
+
+2. Acesse de outro dispositivo:
+   ```
+   http://<SEU_IP>:7860
+   ```
+
+#### Solução de Problemas Comuns
+
+- **"Modelo não carregado"**: Treine o modelo primeiro ou verifique o caminho do checkpoint
+- **"CUDA out of memory"**: Reduza o batch size ou use CPU (detectado automaticamente)
+- **Logs não atualizam**: Clique em "🔄 Atualizar Logs" manualmente
+- **Interface travada**: Aguarde conclusão do processo ou reinicie o servidor (Ctrl+C)
+
+#### Monitoramento Avançado
+
+Para análise detalhada durante treinamento, use TensorBoard em paralelo:
+```bash
+tensorboard --logdir=./runs
+```
+Acesse em: http://localhost:6006
+
+📖 **Documentação completa da GUI**: [GUI_README.md](GUI_README.md) | **Guia rápido**: [QUICKSTART.md](QUICKSTART.md)
+
+---
+
+### 🎯 Linha de Comando (Avançado)
 
 Para executar todo o pipeline automaticamente (treinar ambos os modelos, comparar e gerar relatório):
 
@@ -208,6 +313,11 @@ Abra no navegador:
 
 ```
 melanoma-detection/
+├── app.py                  # Interface gráfica principal (NOVO!)
+├── gui/                    # Módulos da interface gráfica (NOVO!)
+│   ├── training_interface.py    # Interface de treinamento
+│   ├── prediction_interface.py  # Interface de predição
+│   └── comparison_interface.py  # Comparação e histórico
 ├── data/                   # Dataset e processamento
 │   ├── dataset.py          # Carregamento do dataset
 │   ├── preprocessing.py    # Transformações e augmentações
@@ -222,7 +332,7 @@ melanoma-detection/
 │   └── efficiency.py        # Benchmark computacional
 ├── explainability/         # Grad-CAM
 │   └── gradcam.py
-├── experiments/            # Scripts principais
+├── experiments/            # Scripts principais (linha de comando)
 │   ├── main.py             # Script principal (executa tudo)
 │   ├── generate_report.py  # Gera relatório completo
 │   ├── train_resnet.py     # Treinar ResNet-50
@@ -234,7 +344,8 @@ melanoma-detection/
 ├── checkpoints/            # Modelos treinados (gerado)
 ├── results/                # Resultados e visualizações (gerado)
 ├── runs/                   # Logs TensorBoard (gerado)
-└── requirements.txt        # Dependências
+├── requirements.txt        # Dependências
+└── GUI_README.md           # Documentação da interface gráfica (NOVO!)
 ```
 
 ## 📈 Métricas Calculadas

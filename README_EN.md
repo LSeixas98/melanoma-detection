@@ -92,7 +92,112 @@ data/
 
 ## 🚀 Usage
 
-### 🎯 Run Everything in Sequence (Recommended)
+### 🖥️ Graphical Interface (Recommended for Beginners)
+
+**New feature!** Complete web interface to train, make predictions, and analyze results intuitively.
+
+#### Launch the Interface
+
+**Windows:**
+```bash
+python app.py
+# or double-click run_gui.bat
+```
+
+**Linux/Mac:**
+```bash
+python3 app.py
+# or execute: ./run_gui.sh
+```
+
+The interface will open automatically at: **http://localhost:7860**
+
+#### Main Features
+
+**🏋️ Training**
+- Select model (ResNet-50 or EfficientNet-B0)
+- Configure hyperparameters (epochs, batch size, learning rate)
+- Monitor progress in real-time with live logs
+- Checkpoints automatically saved in `./checkpoints/`
+
+**🔍 Individual Prediction**
+- Load trained models with one click
+- Upload skin lesion images
+- View probabilities and predictions
+- **Grad-CAM**: Heat maps showing important regions for the decision
+- Compare predictions from both models side by side
+
+**📁 Batch Prediction**
+- Process multiple images simultaneously
+- Export results to CSV
+- Table visualization with probabilities
+
+**⚖️ Model Comparison**
+- Compare ResNet-50 vs EfficientNet-B0
+- Comparative clinical metrics (Accuracy, Sensitivity, Specificity, AUC-ROC, F1-Score)
+- Interactive comparative charts
+
+**📊 Training History**
+- View all completed trainings
+- Learning curves (loss, AUC-ROC, learning rate)
+- Test metrics for each model
+
+#### Quick Start Workflow
+
+1. **Train a model:**
+   - "🏋️ Training" tab → Select model → Configure parameters → "▶️ Start Training"
+   - Wait for completion (real-time progress)
+
+2. **Make predictions:**
+   - "🔍 Individual Prediction" tab → Load models → Upload image → "🔮 Make Prediction"
+   - Check "Show Grad-CAM" for explainability visualization
+
+3. **Compare results:**
+   - "⚖️ Comparison" tab → "🔄 Run Comparison"
+   - Analyze metrics and identify the best model
+
+#### Important Tips
+
+- **Always load models** before making predictions (buttons "Load ResNet-50" and "Load EfficientNet-B0")
+- **Use Grad-CAM** to validate if the model is focusing on correct regions of the lesion
+- **Compare both models** for greater confidence in predictions
+- **Sensitivity is crucial** for melanoma (ability to detect malignant cases)
+
+#### Share on Local Network
+
+To access from other devices on the same network:
+
+1. Identify your local IP:
+   ```bash
+   ipconfig      # Windows
+   ifconfig      # Linux/Mac
+   ```
+
+2. Access from another device:
+   ```
+   http://<YOUR_IP>:7860
+   ```
+
+#### Common Troubleshooting
+
+- **"Model not loaded"**: Train the model first or check checkpoint path
+- **"CUDA out of memory"**: Reduce batch size or use CPU (automatically detected)
+- **Logs not updating**: Click "🔄 Refresh Logs" manually
+- **Interface frozen**: Wait for process completion or restart server (Ctrl+C)
+
+#### Advanced Monitoring
+
+For detailed analysis during training, use TensorBoard in parallel:
+```bash
+tensorboard --logdir=./runs
+```
+Access at: http://localhost:6006
+
+---
+
+### 🎯 Command Line (Advanced)
+
+#### Run Everything in Sequence
 
 To run the complete pipeline automatically (train both models, compare, and generate report):
 
@@ -208,6 +313,13 @@ Open in browser:
 
 ```
 melanoma-detection/
+├── app.py                  # Main GUI application (NEW!)
+├── run_gui.bat             # GUI launcher for Windows (NEW!)
+├── run_gui.sh              # GUI launcher for Linux/Mac (NEW!)
+├── gui/                    # GUI modules (NEW!)
+│   ├── training_interface.py    # Training interface
+│   ├── prediction_interface.py  # Prediction interface
+│   └── comparison_interface.py  # Comparison and history
 ├── data/                   # Dataset and processing
 │   ├── dataset.py          # Dataset loading
 │   ├── preprocessing.py    # Transformations and augmentations
@@ -222,7 +334,7 @@ melanoma-detection/
 │   └── efficiency.py      # Computational benchmark
 ├── explainability/         # Grad-CAM
 │   └── gradcam.py
-├── experiments/            # Main scripts
+├── experiments/            # Command-line scripts
 │   ├── main.py             # Main script (runs everything)
 │   ├── generate_report.py  # Generates complete report
 │   ├── train_resnet.py     # Train ResNet-50
@@ -234,7 +346,9 @@ melanoma-detection/
 ├── checkpoints/            # Trained models (generated)
 ├── results/                # Results and visualizations (generated)
 ├── runs/                   # TensorBoard logs (generated)
-└── requirements.txt       # Dependencies
+├── requirements.txt       # Dependencies
+├── GUI_README.md          # Detailed GUI documentation (NEW!)
+└── QUICKSTART.md          # Quick start guide (NEW!)
 ```
 
 ## 📈 Calculated Metrics

@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip install:*)",
+      "Bash(python app.py:*)",
+      "Bash(timeout /t 5 /nobreak)",
+      "Bash(python:*)",
+      "Bash(grep:*)",
+      "Bash(git checkout:*)",
+      "Bash(wc:*)"
+    ]
+  }
+}
